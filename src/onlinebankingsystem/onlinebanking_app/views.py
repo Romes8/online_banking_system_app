@@ -11,11 +11,14 @@ def index(request):
 
 def show_cards(request, ssnclient):
     action = Utilities.show_cards(ssnclient)
-    return HttpResponse(action, content_type = "application/json")
+    print(action)
+    print("test")
+    return HttpResponse(action, content_type = 'application/json')
 
 
 def highest(request, account_id):
     action = Utilities.highest_transaction(account_id)
+    print("test")
     return HttpResponse(action, content_type = "application/json")
 
 
