@@ -1,0 +1,158 @@
+
+{
+   "0":
+    {
+        "_id" : 8,
+        "firstname": "Roman", 
+        "lastname": "Zvoda",
+        "ssn": "300-01-2000",
+        "dateOfBirth": "2000-01-30",
+        "address": "Blushojvej 30",
+        "city": "Copenhagen",
+        "phoneNumber": "91953126",
+        "email": "romanko@mongo.com",
+        "login": 
+        {
+            "username": "romanko@mongo.com",
+            "password": "secretsecret123"
+        },
+        "accounts":
+        {
+            "0": {
+                "number": "80032788967",
+                "type": "Savings account",
+                "balance": 91315.49,
+                "bank": "DamagerBank Viby",
+                "dateOpened": "2020-12-23",
+                "lastUpdate": "2021-10-28"
+            },
+            "1": {
+                "number": "22694772275",
+                "type": "Individual retirement arragement",
+                "balance": 99672.53,
+                "bank": "DamagerBank Tarnby",
+                "dateOpened": "2019-07-01",
+                "lastUpdate": "2021-10-28"
+            }
+            
+        },
+        "bank":
+        {
+            "name": "DamagerBank København",
+            "address": "Vester Voldgade 89, 1552 København",
+            "phoneNumber": "83856129"
+        },
+        "cards":
+        {
+            "credit_card":
+            {
+                "0":
+                {
+                    "number": "4101676305857531",
+                    "cvc": "823",
+                    "expiry_date": "2021-11-30",
+                    "type": "Secured",
+                    "fee": 90.00
+                }
+            },
+            "debit_card":
+            {
+                "0":
+                {
+                    "number": "5165386953942284",
+                    "cvc": "284",
+                    "expiry_date": "2024-11-30",
+                    "type": "VISA"
+
+                },
+                "1":
+                {
+                    "number": "4315318949166134",
+                    "cvc": "718",
+                    "expiry_date": "2023-10-30",
+                    "type": "MasterCard"
+                }
+
+            }
+        },
+        "loans": 
+        {
+            "0": 
+            {
+                "type": "Personal Loan",
+                "amount": "200.00",
+                "monthly_fee": "20.00",
+                "dateStart": "2021-10-28",
+                "dateEnd": "2022-08-28"
+            }
+        }
+    },
+    "1":
+    {
+        "_id": 12,
+        "firstname": "Catalina", 
+        "lastname": "Vartic",
+        "ssn": "121-12-2000",
+        "dateOfBirth": "2000-12-12",
+        "address": "Folfodvej 30",
+        "city": "Copenhagen",
+        "phoneNumber": "91953653",
+        "email": "catalinka@mongo.com",
+        "login": 
+        {
+            "username": "catalinka@mongo.com",
+            "password": "secretsecret987"
+        },
+        "accounts":
+        {
+            "1": {
+                "number": "57675482214",
+                "type": "Savings account",
+                "balance": 85022.49,
+                "bank": "DamagerBank Tarnby",
+                "dateOpened": "2021-02-23",
+                "lastUpdate": "2021-10-28"
+            }
+            
+        },
+        "bank":
+        {
+            "name": "DamagerBank København",
+            "address": "Vester Voldgade 89, 1552 København",
+            "phoneNumber": "83856129"
+        },
+        "cards":
+        {
+            "debit_card":
+            {
+                "0":
+                {
+                    "number": "7775386953942454",
+                    "cvc": "205",
+                    "expiry_date": "2023-10-12",
+                    "type": "MasterCard"
+
+                },
+                "1":
+                {
+                    "number": "6655318949166726",
+                    "cvc": "721",
+                    "expiry_date": "2023-11-20",
+                    "type": "VISA"
+                }
+
+            }
+        },
+        "loans": 
+        {
+            "0": 
+            {
+                "type": "Mortgage Loan",
+                "amount": "400.00",
+                "monthly_fee": "20.00",
+                "dateStart": "2021-10-28",
+                "dateEnd": "2023-06-28"
+            }
+        }
+    }
+}
