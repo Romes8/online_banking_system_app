@@ -85,6 +85,14 @@ DATABASES = {
         'PASSWORD': 'nieromi2000',
         'HOST': '127.0.0.1',
         'PORT': '3306'
+    },
+    'mongodb': {
+        'ENGINE':'djongo',
+        'NAME': 'onlinebankingsystem',
+        'ENFORCE_SCHEMA': False,
+        'CLIENT': {
+            'host': 'mongodb+srv://Roman:Databases2021@bankingsystem1.kubpg.mongodb.net/test'
+        }
     }
 }
 

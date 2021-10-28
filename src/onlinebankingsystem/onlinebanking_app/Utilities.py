@@ -66,3 +66,69 @@ def check_loans(accountId):
         return json.dumps(mydict, indent=2)
     finally:
         cursor.close()
+
+
+
+
+from pymongo import MongoClient
+# connect to the mongoclient
+client = MongoClient('mongodb+srv://Roman:Databases2021@bankingsystem1.kubpg.mongodb.net/test')
+
+# get the database
+db = client['onlinebankingsystem']
+
+def pymongo_find():
+    data = []
+    cl = db["transactions"]
+    for x in cl.find():
+        print(x)
+        data.append(x)       
+    return json.dumps(data, indent=2)
+
+def join_cata():
+    data = []
+    cl = db["transactions"]
+    for x in cl.aggregate([
+        {
+           "$lookup":
+                {
+                    "from": "client",
+                    "let":{"id": "$client_id"},
+                    "pipeline":[
+                        {"$match":{"$expr": {"$eq": ["$$id", "$_id"]}}},
+                        {"$project":{"_id":0,"firstname":1,"lastname":1}}
+                    ],
+                    "as": "cor_client"
+                }
+            }
+    ]):
+        print(x)
+        data.append(x)
+    return json.dumps(data, indent=2)
+
+        
+def join_roman():
+    data = []
+    cl = db["transactions"]
+    cl.aggregate([
+        {
+           "$lookup":
+                {
+                    "from": "client",
+                    "localField": "client_id",
+                    "foreignField":"_id",
+                    "as": "client"
+                }
+            },
+            {
+                "$project":
+                {
+                    "amount": 1,
+                    "cor_client": {"firstname" : 1, "lastname": 1}
+                }
+            }
+    ])
+    for x in cl.find():
+        print(x)
+        data.append(x)
+    return json.dumps(data, indent=2)

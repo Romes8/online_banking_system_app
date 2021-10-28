@@ -34,3 +34,8 @@ def show_loans(request, account_id):
 def cashback(request):
     action = Utilities.cashback()
     return HttpResponse(action, content_type = "application/json")
+
+def mongodb(request):
+    Utilities.pymongo_find()
+    action = Utilities.join_cata()
+    return HttpResponse(action, content_type = "application/json")
