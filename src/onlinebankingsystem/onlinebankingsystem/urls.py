@@ -16,8 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from onlinebanking_app import views
+from django.conf.urls import url
+from rest_framework_swagger.views import get_swagger_view  # <-- Here
+
+schema_view = get_swagger_view(title='Pastebin API')
+
 
 urlpatterns = [
+    path('docs/', schema_view),  # <-- Here
     path('admin/', admin.site.urls),
     path('mysql/highestTransaction/<int:account_id>/', views.highest, name='Highest Transaction Made'),
     path('mysql/showCards/<str:ssnclient>/', views.show_cards, name='Show Cards'),

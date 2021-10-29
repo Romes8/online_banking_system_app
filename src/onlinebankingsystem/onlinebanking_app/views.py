@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from onlinebanking_app import Utilities
 
-
 # Create your views here.
 def index(request):
     action = Utilities.cashback()
