@@ -36,7 +36,7 @@ urlpatterns = [
     path('mongo/show_loans/<int:_id>',views.mongo_show_loans, name='Show loans'),
     path('mongo/highest/<int:client_id>', views.mongo_highest),
     path('mongo/send/<int:client_id>/<str:account_number>/<str:amount>', views.mongo_send),
-    path('mongo/received/<int:client_id>/<str:account_number>/<str:amount>', views.mongo_received)
+    path('mongo/received/<int:client_id>/str:account_number/<str:amount>', views.mongo_received)
 
 
 ]
