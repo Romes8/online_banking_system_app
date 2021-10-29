@@ -40,7 +40,6 @@ INSTALLED_APPS = [
 
     # own apps 
     'onlinebanking_app',
-    'rest_framework_swagger'
 
 ]
 
@@ -96,13 +95,7 @@ DATABASES = {
         }
     }
 }
-#https://www.jasonmars.org/2020/04/22/add-swagger-to-django-rest-api-quickly-4-mins-without-hiccups/
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS':
-    'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 100,
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'  # <-- Here
-}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators

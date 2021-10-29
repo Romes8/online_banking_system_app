@@ -17,13 +17,9 @@ from django.contrib import admin
 from django.urls import path
 from onlinebanking_app import views
 from django.conf.urls import url
-from rest_framework_swagger.views import get_swagger_view  # <-- Here
-
-schema_view = get_swagger_view(title='Pastebin API')
 
 
 urlpatterns = [
-    path('docs/', schema_view),  # <-- Here
     path('admin/', admin.site.urls),
     path('mysql/highestTransaction/<int:account_id>/', views.highest, name='Highest Transaction Made'),
     path('mysql/showCards/<str:ssnclient>/', views.show_cards, name='Show Cards'),
@@ -36,7 +32,7 @@ urlpatterns = [
     path('mongo/show_loans/<int:_id>',views.mongo_show_loans, name='Show loans'),
     path('mongo/highest/<int:client_id>', views.mongo_highest),
     path('mongo/send/<int:client_id>/<str:account_number>/<str:amount>', views.mongo_send),
-    path('mongo/received/<int:client_id>/str:account_number/<str:amount>', views.mongo_received)
+    path('mongo/received/<int:client_id>/<str:account_number>/<str:amount>', views.mongo_received)
 
 
 ]
