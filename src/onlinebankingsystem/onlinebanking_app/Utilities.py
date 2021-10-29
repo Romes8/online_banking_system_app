@@ -165,7 +165,7 @@ def mongo_received(client_id,account_number,_amount):
         else:
             return "Account doesnt exist. Please enter a valid account number."
     else :
-        return "Client does not exist. Please enter a valid client ID"
+        return "Client does not exist. Please enter a valid client ID."
 
 
 
