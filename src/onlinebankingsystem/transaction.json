@@ -2,7 +2,6 @@
     "0":
     {
         "_id": 0,
-        "type": "Cash withdrawals",
         "account_number": "57675482214",
         "amount": 2500.50,
         "status": "send",
@@ -12,7 +11,6 @@
     "1":
     {
         "_id": 1,
-        "type": "Online payments",
         "account_number": "80032788967",
         "amount": 1500.00,
         "status": "received",
@@ -22,7 +20,6 @@
     "2":
     {
         "_id": 2,
-        "type": "Online payments",
         "account_number": "80032788967",
         "amount": 1000.00,
         "status": "send",
@@ -32,7 +29,6 @@
     "3":
     {
         "_id": 3,
-        "type": "Online payments",
         "account_number": "22694772275",
         "amount": 5000.00,
         "status": "received",
