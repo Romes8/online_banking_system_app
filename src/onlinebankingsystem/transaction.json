@@ -2,16 +2,40 @@
     "0":
     {
         "_id": 0,
-        "type": "Income",
-        "amount": "40.30",
+        "type": "Cash withdrawals",
+        "account_number": "57675482214",
+        "amount": 2500.50,
+        "status": "send",
         "date": "2021-10-28",
         "client_id" : 12
     },
     "1":
     {
         "_id": 1,
-        "type": "Income",
-        "amount": "40.30",
+        "type": "Online payments",
+        "account_number": "80032788967",
+        "amount": 1500.00,
+        "status": "received",
+        "date": "2021-10-28",
+        "client_id" : 8
+    },
+    "2":
+    {
+        "_id": 2,
+        "type": "Online payments",
+        "account_number": "80032788967",
+        "amount": 1000.00,
+        "status": "send",
+        "date": "2021-10-28",
+        "client_id" : 8
+    },
+    "3":
+    {
+        "_id": 3,
+        "type": "Online payments",
+        "account_number": "22694772275",
+        "amount": 5000.00,
+        "status": "received",
         "date": "2021-10-28",
         "client_id" : 8
     }

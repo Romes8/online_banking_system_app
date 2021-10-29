@@ -76,6 +76,73 @@ client = MongoClient('mongodb+srv://Roman:Databases2021@bankingsystem1.kubpg.mon
 
 # get the database
 db = client['onlinebankingsystem']
+cl = db["client"]
+tr = db["transactions"]
+
+def mongo_highest_transaction(client_id):
+    for x in tr.aggregate([
+        {"$match": {"client_id": client_id}},
+        {"$sort": {"amount": -1}},
+        {"$limit": 1},
+        {"$lookup":{
+            "from":"client",
+            "let":{"id": "$client_id"},
+            "pipeline":[
+                {"$match":{"$expr": {"$eq": ["$$id", "$_id"]}}},
+                {"$project":{"_id":0,"firstname":1,"lastname":1}}
+            ],
+            "as": "client"
+        }}
+    ]):
+        return json.dumps(x, indent=2) 
+
+
+def mongo_show_cards(client_id):
+    for x in cl.aggregate([
+        {"$match":{"_id": client_id}},
+        { "$project": {
+                "firstname" : 1,
+                "lastname": 1,
+                "cards": {"credit_card": 1, "debit_card": 1}
+            }}]):
+        print(x)
+    return json.dumps(x, indent=2) 
+
+def mongo_show_loans(client_id):
+    for x in cl.aggregate([
+        {"$match":{"_id": client_id}},
+        { "$project": {
+                "firstname" : 1,
+                "lastname": 1,
+                "loans": 1
+            }}]):
+        print(x)
+    return json.dumps(x, indent=2)
+
+def mongo_show_transactions(client_id, start_date, end_date):
+    data = []
+    for x in tr.find({"client_id": client_id, "date": {"$gte": start_date, "$lte": end_date}}):
+        data.append(x)
+    if not data:
+        return 1
+    return json.dumps(data, indent=2)
+
+
+def mongo_send(client_id,account_number, _amount):
+    amount = float(_amount)
+   # print(cl.aggregate([{"$project": {"accounts": {"balance" : 1}}}]))
+    cl.update({ "_id": client_id, "accounts.number": account_number}, {"$inc": { "accounts.$.balance": amount}, "$currentDate": {"accounts.$.lastUpdate": {"$type": "date"}}})
+    
+    return 1
+
+
+def mongo_received(client_id,_amount):
+    amount = float(_amount)
+    
+    return 1
+
+
+
 
 def pymongo_find():
     data = []

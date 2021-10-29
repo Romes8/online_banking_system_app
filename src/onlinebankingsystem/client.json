@@ -84,6 +84,14 @@
                 "monthly_fee": "20.00",
                 "dateStart": "2021-10-28",
                 "dateEnd": "2022-08-28"
+            },
+            "1": 
+            {
+                "type": "Development Loan",
+                "amount": "3000.00",
+                "monthly_fee": "200.00",
+                "dateStart": "2021-10-28",
+                "dateEnd": "2023-01-28"
             }
         }
     },
