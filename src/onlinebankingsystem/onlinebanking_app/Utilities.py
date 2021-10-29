@@ -1,6 +1,5 @@
 from django.db import connection
 import json
-from datetime import date
 #test
 
 def cashback():
@@ -81,61 +80,53 @@ cl = db["client"]
 tr = db["transactions"]
 
 def mongo_highest_transaction(client_id):
-    if cl.count({"_id":client_id}):
-        for x in tr.aggregate([
-            {"$match": {"client_id": client_id}},
-            {"$sort": {"amount": -1}},
-            {"$limit": 1},
-            {"$lookup":{
-                "from":"client",
-                "let":{"id": "$client_id"},
-                "pipeline":[
-                    {"$match":{"$expr": {"$eq": ["$$id", "$_id"]}}},
-                    {"$project":{"_id":0,"firstname":1,"lastname":1}}
-                ],
-                "as": "client"
-            }}
-        ]):
-            return json.dumps(x, indent=2) 
-    else:
-        return "No client with this ID found."
+    for x in tr.aggregate([
+        {"$match": {"client_id": client_id}},
+        {"$sort": {"amount": -1}},
+        {"$limit": 1},
+        {"$lookup":{
+            "from":"client",
+            "let":{"id": "$client_id"},
+            "pipeline":[
+                {"$match":{"$expr": {"$eq": ["$$id", "$_id"]}}},
+                {"$project":{"_id":0,"firstname":1,"lastname":1}}
+            ],
+            "as": "client"
+        }}
+    ]):
+        return json.dumps(x, indent=2) 
 
 
 def mongo_show_cards(client_id):
-    if cl.count({"_id":client_id}):
-        for x in cl.aggregate([
-            {"$match":{"_id": client_id}},
-            { "$project": {
-                    "firstname" : 1,
-                    "lastname": 1,
-                    "cards": {"credit_card": 1, "debit_card": 1}
-                }}]):
-            return json.dumps(x, indent=2) 
-    else:
-        return "Client does not exist. Please enter a valid client ID."
+    for x in cl.aggregate([
+        {"$match":{"_id": client_id}},
+        { "$project": {
+                "firstname" : 1,
+                "lastname": 1,
+                "cards": {"credit_card": 1, "debit_card": 1}
+            }}]):
+        print(x)
+    return json.dumps(x, indent=2) 
+
 def mongo_show_loans(client_id):
-    if cl.count({"_id":client_id}):
-        for x in cl.aggregate([
-            {"$match":{"_id": client_id}},
-            { "$project": {
-                    "firstname" : 1,
-                    "lastname": 1,
-                    "loans": 1
-                }}]):
-            return json.dumps(x, indent=2)
-    else:
-        return "No client with this ID found."
+    for x in cl.aggregate([
+        {"$match":{"_id": client_id}},
+        { "$project": {
+                "firstname" : 1,
+                "lastname": 1,
+                "loans": 1
+            }}]):
+        print(x)
+    return json.dumps(x, indent=2)
 
 def mongo_show_transactions(client_id, start_date, end_date):
     data = []
-    if cl.count({"_id": client_id}):
-        for x in tr.find({"client_id": client_id, "date": {"$gte": start_date, "$lte": end_date}}):
-            data.append(x)
-        if not data:
-            return "No transaction in this period. Please input another start/end date."
-        return json.dumps(data, indent=2)
-    else:
-        return "Client does not exist. Please enter a valid cient ID."
+    for x in tr.find({"client_id": client_id, "date": {"$gte": start_date, "$lte": end_date}}):
+        data.append(x)
+    if not data:
+        return 1
+    return json.dumps(data, indent=2)
+
 
 def mongo_send(client_id,account_number, _amount):
     cur_date = date.today().strftime("%Y-%m-%d")
@@ -166,6 +157,7 @@ def mongo_received(client_id,account_number,_amount):
             return "Account doesnt exist. Please enter a valid account number."
     else :
         return "Client does not exist. Please enter a valid client ID."
+
 
 
 

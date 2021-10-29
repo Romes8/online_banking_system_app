@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from onlinebanking_app import Utilities
 
-
 # Create your views here.
 def index(request):
     action = Utilities.cashback()
@@ -56,8 +55,8 @@ def mongo_send(request, client_id, account_number, amount):
     action = Utilities.mongo_send(client_id, account_number, amount)
     return HttpResponse(action, content_type = "application/json")
 
-def mongo_received(request, client_id, account_number, amount):
-    action = Utilities.mongo_received(client_id, account_number, amount)
+def mongo_received(request):
+    action = Utilities.mongo_received()
     return HttpResponse(action, content_type = "application/json")
 
 
