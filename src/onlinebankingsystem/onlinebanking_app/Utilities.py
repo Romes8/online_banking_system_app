@@ -1,6 +1,6 @@
 from django.db import connection
 from django.db.models import Max
-from onlinebanking_app.models import Transactions, CreditCards, DebitCards
+from onlinebanking_app.models import Transactions, CreditCards, DebitCards,Clients
 import json
 from datetime import date
 #test
@@ -18,6 +18,9 @@ def highest_transaction(param):
     cursor = connection.cursor()
     try:
         mydict = dict()
+        result = cursor.execute("SELECT * FROM accounts WHERE id='{}'".format(param))
+        if result == 0:
+            return "No client with this account id found."
         cursor.execute("CALL highestTransaction({})".format(param))
         for record in cursor.fetchall():
             mydict = {"accountNumber": record[0], "amount": float(record[1]), "typeOfTransaction": record[2], "status": record[3], "date": record[4]}
@@ -45,15 +48,18 @@ def show_cards(param):
     try:
         id = 0
         mydict = dict()
+        result = cursor.execute("SELECT * FROM Clients WHERE SSN='{}'".format(param))
+        if result == 0:
+            return "No client with this SSN found."
         cursor.execute("CALL show_cards('{}')".format(param))
         for record in cursor.fetchall():
             id += 1
             mydict[id] = {"firstName": record[0], "lastName": record[1], "type": record[2], "number": record[3], "date": record[4], "type2": record[5]}
-
         return json.dumps(mydict, indent=2, sort_keys=False)
     finally:
         cursor.close()
-    
+      
+
     """
     id = 0
     mydict = {}
@@ -91,6 +97,9 @@ def show_transactions(account_number, start_date, end_date):
     cursor = connection.cursor()
     try:
         mydict = dict()
+        result = cursor.execute("SELECT * FROM accounts WHERE accountNumber='{}'".format(account_number))
+        if result == 0:
+            return "No client with this account number found."
         cursor.execute("CALL ShowTransactions({},'{}','{}')".format(account_number,start_date,end_date))
         for record in cursor.fetchall():
             if account_number in mydict:
@@ -107,6 +116,9 @@ def check_loans(accountId):
     try:
         id = 0
         mydict = dict()
+        result = cursor.execute("SELECT * FROM accounts WHERE id='{}'".format(accountId))
+        if result == 0:
+            return "No client with this account id found."
         cursor.execute("CALL loan_duration_left({})".format(accountId))
         for record in cursor.fetchall():
             print(record)
@@ -115,11 +127,6 @@ def check_loans(accountId):
         return json.dumps(mydict, indent=2)
     finally:
         cursor.close()
-
-
-
-
-
 
 from pymongo import MongoClient
 # connect to the mongoclient
