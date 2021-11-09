@@ -1,4 +1,6 @@
 from django.db import connection
+from django.db.models import Max
+from onlinebanking_app.models import Transactions, CreditCards, DebitCards
 import json
 from datetime import date
 #test
@@ -23,6 +25,20 @@ def highest_transaction(param):
     finally:
         cursor.close()
 
+    """
+    mydict = {}
+    query = Transactions.objects.aggregate(Max('amount'))
+    highest_transaction = Transaction.objects.get(amount=query['amount__max'])
+    mydict = {
+        "accountNumber": highest_transaction.account.accountnumber,
+        "amount": highest_transaction.amount,
+        "typeOfTransaction": highest_transaction.typeoftransaction.type,
+        "status": highest_transaction.status,
+        "date": highest_transaction.date
+    }
+    return json.dumps(mydict, indent=2)
+    """
+
 
 def show_cards(param):
     cursor = connection.cursor()
@@ -37,6 +53,38 @@ def show_cards(param):
         return json.dumps(mydict, indent=2, sort_keys=False)
     finally:
         cursor.close()
+    
+    """
+    id = 0
+    mydict = {}
+    client= Clients.objects.get(ssn=param)
+    accounts = AccountCustomers.objects.filter(client=client.id)
+    for account in accounts:
+        account_id = account.account
+        credit_cards = CreditCards.objects.filter(account=account_id)
+        for card in credit_cards:
+            id += 1
+            mydict[id] = {
+                "firstName": client.firstName,
+                "lastName": client.lastName,
+                "type": card.typeofcard.type,
+                "number": card.number,
+                "date": card.expiry_date,
+                "type2": 'Credit Card'
+            }
+        debit_cards = DebitCards.objects.filter(account=account_id)
+        for card in debit_cards:
+            id += 1
+            mydict[id] = {
+                "firstName": client.firstName,
+                "lastName": client.lastName,
+                "type": card.typeofcard.type,
+                "number": card.number,
+                "date": card.expiry_date,
+                "type2": 'Credit Card'
+            }
+    return json.dump(mydict, indent=2, sort_keys=False)  
+    """
 
 
 def show_transactions(account_number, start_date, end_date):
@@ -67,6 +115,8 @@ def check_loans(accountId):
         return json.dumps(mydict, indent=2)
     finally:
         cursor.close()
+
+
 
 
 
@@ -167,61 +217,4 @@ def mongo_received(client_id,account_number,_amount):
     else :
         return "Client does not exist. Please enter a valid client ID"
 
-
-
-
-def pymongo_find():
-    data = []
-    cl = db["transactions"]
-    for x in cl.find():
-        print(x)
-        data.append(x)       
-    return json.dumps(data, indent=2)
-
-def join_cata():
-    data = []
-    cl = db["transactions"]
-    for x in cl.aggregate([
-        {
-           "$lookup":
-                {
-                    "from": "client",
-                    "let":{"id": "$client_id"},
-                    "pipeline":[
-                        {"$match":{"$expr": {"$eq": ["$$id", "$_id"]}}},
-                        {"$project":{"_id":0,"firstname":1,"lastname":1}}
-                    ],
-                    "as": "cor_client"
-                }
-            }
-    ]):
-        print(x)
-        data.append(x)
-    return json.dumps(data, indent=2)
-
         
-def join_roman():
-    data = []
-    cl = db["transactions"]
-    cl.aggregate([
-        {
-           "$lookup":
-                {
-                    "from": "client",
-                    "localField": "client_id",
-                    "foreignField":"_id",
-                    "as": "client"
-                }
-            },
-            {
-                "$project":
-                {
-                    "amount": 1,
-                    "cor_client": {"firstname" : 1, "lastname": 1}
-                }
-            }
-    ])
-    for x in cl.find():
-        print(x)
-        data.append(x)
-    return json.dumps(data, indent=2)
