@@ -11,9 +11,9 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
-
+from pathlib import Path
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -58,7 +58,8 @@ ROOT_URLCONF = 'onlinebankingsystem.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates']
+        ,
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -82,7 +83,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'onlinebankingsystem',
         'USER': 'root',
-        'PASSWORD': 'nieromi2000',
+        'PASSWORD': 'gabriel.09',
         'HOST': '127.0.0.1',
         'PORT': '3306'
     },
@@ -93,6 +94,13 @@ DATABASES = {
         'CLIENT': {
             'host': 'mongodb+srv://Roman:Databases2021@bankingsystem1.kubpg.mongodb.net/test'
         }
+    }
+}
+
+NEO4J_DATABASES = {
+    'neo4j': {
+        'HOST': 'localhost',
+        'PORT': '7474'
     }
 }
 
@@ -115,6 +123,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/

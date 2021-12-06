@@ -27,12 +27,13 @@ urlpatterns = [
     path('mysql/showLoans/<int:account_id>/', views.show_loans, name='Show loans and their state'),
     path('mysql/cashback/', views.cashback, name='Cashback'),
 
-    path('mongo/transactions/<int:client_id>/<str:start_date>/<str:end_date>/',views.mongo_show_transactions, name='Mongo'),
+    path('mongo/login/', views.mongo_login, name="Login"),
+    path('mongo/transactions/<int:client_id>/',views.mongo_show_transactions, name='Mongo'),
     path('mongo/show_cards/<int:_id>',views.mongo_show_cards, name='Show cards'),
     path('mongo/show_loans/<int:_id>',views.mongo_show_loans, name='Show loans'),
     path('mongo/highest/<int:client_id>', views.mongo_highest),
-    path('mongo/send/<int:client_id>/<str:account_number>/<str:amount>', views.mongo_send),
-    path('mongo/received/<int:client_id>/<str:account_number>/<str:amount>', views.mongo_received)
+    path('mongo/send/', views.mongo_send),
+    path('mongo/received/', views.mongo_received)
 
 
 ]

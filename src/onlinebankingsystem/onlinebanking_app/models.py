@@ -310,3 +310,5 @@ class Transactions(models.Model):
     class Meta:
         managed = False
         db_table = 'transactions'
+
+from neomodel import StructuredNode, StringProperty, IntegerProperty, UniqueIdProperty

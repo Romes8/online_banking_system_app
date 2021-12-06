@@ -13,7 +13,7 @@ def cashback():
     finally:
         cursor.close()
 
-
+# Native query
 def highest_transaction(param):
     cursor = connection.cursor()
     try:
@@ -23,11 +23,18 @@ def highest_transaction(param):
             return "No client with this account id found."
         cursor.execute("CALL highestTransaction({})".format(param))
         for record in cursor.fetchall():
-            mydict = {"accountNumber": record[0], "amount": float(record[1]), "typeOfTransaction": record[2], "status": record[3], "date": record[4]}
+            mydict = {
+                "accountNumber": record[0], 
+                "amount": float(record[1]), 
+                "typeOfTransaction": record[2], 
+                "status": record[3], 
+                "date": record[4]
+                }
         return json.dumps(mydict, indent=2)
     finally:
         cursor.close()
 
+# Object-Relational-Mapper ORM 
     """
     mydict = {}
     query = Transactions.objects.aggregate(Max('amount'))
@@ -129,6 +136,9 @@ def check_loans(accountId):
         cursor.close()
 
 from pymongo import MongoClient
+from django.contrib.auth.hashers import check_password, make_password
+from django.shortcuts import render, redirect
+
 # connect to the mongoclient
 client = MongoClient('mongodb+srv://Roman:Databases2021@bankingsystem1.kubpg.mongodb.net/test')
 
@@ -137,6 +147,18 @@ db = client['onlinebankingsystem']
 cl = db["client"]
 tr = db["transactions"]
 
+def mongo_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        if cl.count({"login.username":username}):
+            for record in cl.find({"login.username":username}):
+                if check_password(password, record["login"]["password"]):
+                    return "Loged in successfully"
+        return 'username or password not correct'
+    else:
+        render(request, "login.html")
+ 
 def mongo_highest_transaction(client_id):
     if cl.count({"_id":client_id}):
         for x in tr.aggregate([
@@ -194,34 +216,46 @@ def mongo_show_transactions(client_id, start_date, end_date):
     else:
         return "Client does not exist. Please enter a valid cient ID."
 
-def mongo_send(client_id,account_number, _amount):
-    cur_date = date.today().strftime("%Y-%m-%d")
-    if cl.count({"_id":client_id}):
-        if cl.count({"accounts.number": account_number}):
-            amount = float(_amount)
-        # print(cl.aggregate([{"$project": {"accounts": {"balance" : 1}}}]))
-            cl.update({ "_id": client_id, "accounts.number": account_number}, {"$inc": { "accounts.$.balance": -amount}, "$set": {"accounts.$.lastUpdate": cur_date}})
-            tr.insert({"_id":tr.count(), "account_number": account_number, "amount": amount, "status": "send", "date": cur_date, "client_id": client_id})
+def mongo_send(request):
+    if request.method == "POST":
+        client_id = int(request.POST.get("client_id"))
+        account_number = request.POST.get("account_number")
+        amount = float(request.POST.get("amount"))
+        cur_date = date.today().strftime("%Y-%m-%d")
+        if cl.count({"_id":client_id}):
+            if cl.count({"accounts.number": account_number}):
+                amount = float(amount)
+                with client.start_session() as session:
+                    with session.start_transaction():
+                        cl.update({ "_id": client_id, "accounts.number": account_number}, 
+                            {"$inc": { "accounts.$.balance": -amount}, 
+                                "$set": {"accounts.$.lastUpdate": cur_date}})
+                        tr.insert({"_id":tr.count(), "account_number": account_number, "amount": amount, 
+                            "status": "send", "date": cur_date, "client_id": client_id})
+                        
+                return "Transaction Successful"
+            else:
+                return "Account doesnt exist. Please enter a valid account number."
+        else :
+            return "Client does not exist. Please enter a valid client ID"
             
-            return "Transaction Successful"
-        else:
-            return "Account doesnt exist. Please enter a valid account number."
-    else :
-        return "Client does not exist. Please enter a valid client ID"
+def mongo_received(request):
+    if request.method == "POST":
+        client_id = int(request.POST.get("client_id"))
+        account_number = request.POST.get("account_number")
+        amount = float(request.POST.get("amount"))
+        cur_date = date.today().strftime("%Y-%m-%d")
+        if cl.count({"_id":client_id}):
+            if cl.count({"accounts.number": account_number}):
+                amount = float(amount)
+                with client.start_session() as session:
+                        with session.start_transaction():
+                            cl.update({ "_id": client_id, "accounts.number": account_number}, {"$inc": { "accounts.$.balance": amount}, "$set": {"accounts.$.lastUpdate": cur_date}})
+                            tr.insert({"_id":tr.count(), "account_number": account_number, "amount": amount, "status": "received", "date": cur_date, "client_id": client_id})
+                
+                return "Transaction Successful"
+            else:
+                return "Account doesnt exist. Please enter a valid account number."
+        else :
+            return "Client does not exist. Please enter a valid client ID"
 
-def mongo_received(client_id,account_number,_amount):
-    cur_date = date.today().strftime("%Y-%m-%d")
-    if cl.count({"_id":client_id}):
-        if cl.count({"accounts.number": account_number}):
-            amount = float(_amount)
-        # print(cl.aggregate([{"$project": {"accounts": {"balance" : 1}}}]))
-            cl.update({ "_id": client_id, "accounts.number": account_number}, {"$inc": { "accounts.$.balance": amount}, "$set": {"accounts.$.lastUpdate": cur_date}})
-            tr.insert({"_id":tr.count(), "account_number": account_number, "amount": amount, "status": "received", "date": cur_date, "client_id": client_id})
-            
-            return "Transaction Successful"
-        else:
-            return "Account doesnt exist. Please enter a valid account number."
-    else :
-        return "Client does not exist. Please enter a valid client ID"
-
-        
