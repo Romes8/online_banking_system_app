@@ -33,7 +33,14 @@ urlpatterns = [
     path('mongo/show_loans/<int:_id>',views.mongo_show_loans, name='Show loans'),
     path('mongo/highest/<int:client_id>', views.mongo_highest),
     path('mongo/send/', views.mongo_send),
-    path('mongo/received/', views.mongo_received)
+    path('mongo/received/', views.mongo_received),
 
+    path('neo4j/login/', views.neo4j_login),
+    path('neo4j/highestTransaction/<int:client_id>/', views.neo4j_highest),
+    path('neo4j/show_cards/<int:client_id>/', views.neo4j_show_cards),
+    path('neo4j/show_loans/<int:client_id>/', views.neo4j_show_loans),
+    path('neo4j/show_transactions/<int:client_id>/', views.neo4j_show_transactions),
+    path('neo4j/send/', views.neo4j_send),
+    path('neo4j/receive/', views.neo4j_receive),
 
 ]

@@ -1,8 +1,11 @@
 from django.db import connection
 from django.db.models import Max
+from django.http import request
+from django.http.response import HttpResponse
 from onlinebanking_app.models import Transactions, CreditCards, DebitCards,Clients
 import json
 from datetime import date
+
 #test
 
 def cashback():
@@ -140,7 +143,7 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.shortcuts import render, redirect
 
 # connect to the mongoclient
-client = MongoClient('mongodb+srv://Roman:Databases2021@bankingsystem1.kubpg.mongodb.net/test')
+client = MongoClient()
 
 # get the database
 db = client['onlinebankingsystem']
@@ -205,16 +208,19 @@ def mongo_show_loans(client_id):
     else:
         return "No client with this ID found."
 
-def mongo_show_transactions(client_id, start_date, end_date):
+def mongo_show_transactions(request, client_id):
     data = []
-    if cl.count({"_id": client_id}):
-        for x in tr.find({"client_id": client_id, "date": {"$gte": start_date, "$lte": end_date}}):
-            data.append(x)
-        if not data:
-            return "No transaction in this period. Please input another start/end date."
-        return json.dumps(data, indent=2)
-    else:
-        return "Client does not exist. Please enter a valid cient ID."
+    if request.method == "POST":
+        start_date = request.POST.get("start_date")
+        end_date = request.POST.get("end_date")
+        if cl.count({"_id": client_id}):
+            for x in tr.find({"client_id": client_id, "date": {"$gte": start_date, "$lte": end_date}}):
+                data.append(x)
+            if not data:
+                return "No transaction in this period. Please input another start/end date."
+            return json.dumps(data, indent=2)
+        else:
+            return "Client does not exist. Please enter a valid cient ID."
 
 def mongo_send(request):
     if request.method == "POST":
@@ -259,3 +265,144 @@ def mongo_received(request):
         else :
             return "Client does not exist. Please enter a valid client ID"
 
+
+from onlinebanking_app.neo4j_models import Client, Account, Transaction
+from neomodel import db
+
+def neo4j_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        client = Client.nodes.get_or_none(username=username)
+        if client:
+            if check_password(password, client.password):
+                return "Loged in successfully"
+        return "Username or password invalid"
+    return render(request, "login.html")
+
+def neo4j_highest_transaction(client_id):
+    client = Client.nodes.get(id=client_id)
+    if client:
+        data = []
+        max = 0
+        for account in client.account:
+            for transaction in account.transactions:
+                if transaction.amount > max:
+                    max = transaction.amount
+            transaction = account.transactions.get(amount=max)
+            account_number = account.number
+        data.append({
+            "accountnumber": account_number,
+            "amount": transaction.amount,
+            "status": transaction.status,
+            "date": transaction.date.strftime("%y-%m-%d")
+        })
+        return json.dumps(data, indent=2)
+    return HttpResponse("ERROR")
+
+def neo4j_show_cards(client_id):
+    id = 0
+    data = dict()
+    client = Client.nodes.get_or_none(id=client_id)
+    if client:
+        for creditcard in client.creditcard:
+            id += 1
+            data[id] = {
+                "firstName": client.firstname,
+                "lastName": client.lastname,
+                "type": creditcard.type,
+                "number": creditcard.number,
+                "date": creditcard.expiredate,
+                "fee": creditcard.fee,
+                "type2": "Credit Card"
+            }
+        for debitcard in client.debitcard:
+            id += 1
+            data[id] = {
+                "firstName": client.firstname,
+                "lastName": client.lastname,
+                "type": debitcard.type,
+                "number": debitcard.number,
+                "date": debitcard.expiredate,
+                "type2": "Debit Card"
+            }
+        return json.dumps(data, indent=2)
+    return HttpResponse("ERROR") 
+
+def neo4j_show_loans(client_id):
+    data = []
+    client = Client.nodes.get_or_none(id=client_id)
+    if client:
+        for loan in client.loan:
+            data.append({
+                "firstName": client.firstname,
+                "lastName": client.lastname,
+                "type": loan.type,
+                "amount": loan.amount,
+                "monthlyfee": loan.monthlyfee,
+                "datestart": loan.datestart,
+                "dateend": loan.dateend
+            })
+        return json.dumps(data, indent=2)
+    return HttpResponse("ERROR")
+
+from datetime import datetime
+def neo4j_show_transactions(request, client_id):
+    data = []
+    if request.method == "POST":
+        start_date = datetime.strptime(request.POST.get("start_date"), '%y-%m-%d')
+        end_date = datetime.strptime(request.POST.get("end_date"), '%y-%m-%d')
+        client = Client.nodes.get_or_none(id=client_id)
+        if client:
+            for account in client.account:
+                for transaction in account.transactions.filter(date__gte=start_date, date__lte=end_date):
+                    data.append({
+                        "account_number": account.number,
+                        "amount": transaction.amount,
+                        "status": transaction.status,
+                        "date": transaction.date.strftime("%y-%m-%d")
+                    })
+            return json.dumps(data, indent=2)
+        return HttpResponse("ERROR")
+
+
+@db.transaction
+def neo4j_send(request):
+    if request.method == "POST":
+        client_id = int(request.POST.get("client_id"))
+        account_number = request.POST.get("account_number")
+        amount = float(request.POST.get("amount"))
+        cur_date = date.today()
+        client = Client.nodes.get_or_none(id=client_id)
+        if client:
+            account = Account.nodes.get_or_none(number=account_number)
+            if account:
+                print(account)
+                account.balance -= amount
+                account.save()
+                transaction = Transaction(amount=amount, status='send', date=cur_date).save()
+                transaction.accounts.connect(account)
+                return HttpResponse("Transaction successfull")
+            return HttpResponse("No such account")
+        return HttpResponse("Client doesn't exist")
+
+
+@db.transaction
+def neo4j_receive(request):
+    if request.method == "POST":
+        client_id = int(request.POST.get("client_id"))
+        account_number = request.POST.get("account_number")
+        amount = float(request.POST.get("amount"))
+        cur_date = date.today()
+        client = Client.nodes.get_or_none(id=client_id)
+        if client:
+            account = Account.nodes.get_or_none(number=account_number)
+            if account:
+                print(account)
+                account.balance += amount
+                account.save()
+                transaction = Transaction(amount=amount, status='receive', date=cur_date).save()
+                transaction.accounts.connect(account)
+                return HttpResponse("Transaction successfull")
+            return HttpResponse("No such account")
+        return HttpResponse("Client doesn't exist")

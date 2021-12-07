@@ -39,12 +39,10 @@ def mongo_login(request):
     action = Utilities.mongo_login(request)
     return HttpResponse(action, content_type = "application/json")
 
-@csrf_exempt
 def mongo_send(request):
     action = Utilities.mongo_send(request)
     return HttpResponse(action, content_type = "application/json")
 
-@csrf_exempt
 def mongo_received(request):
     action = Utilities.mongo_received(request)
     return HttpResponse(action, content_type = "application/json")
@@ -57,7 +55,6 @@ def mongo_show_loans(request, _id):
     action = Utilities.mongo_show_loans(_id)
     return HttpResponse(action, content_type = 'application/json')
 
-@csrf_exempt
 def mongo_show_transactions(request, client_id):
     action = Utilities.mongo_show_transactions(request, client_id)
     if action == 1:
@@ -73,4 +70,30 @@ def mongodb(request):
     action = Utilities.join_cata()
     return HttpResponse(action, content_type = "application/json")
 
-    
+def neo4j_login(request):
+    action = Utilities.neo4j_login(request)
+    return HttpResponse(action, content_type="application/json")
+
+def neo4j_highest(request, client_id):
+    action = Utilities.neo4j_highest_transaction(client_id)
+    return HttpResponse(action, content_type="application/json")
+
+def neo4j_show_cards(request, client_id):
+    action = Utilities.neo4j_show_cards(client_id)
+    return HttpResponse(action, content_type="application/json")
+
+def neo4j_show_loans(request, client_id):
+    action = Utilities.neo4j_show_loans(client_id)
+    return HttpResponse(action, content_type="application/json")
+
+def neo4j_show_transactions(request, client_id):
+    action = Utilities.neo4j_show_transactions(request, client_id)
+    return HttpResponse(action, content_type="application/json")
+
+def neo4j_send(request):
+    action = Utilities.neo4j_send(request)
+    return HttpResponse(action, content_type="application/json")
+
+def neo4j_receive(request):
+    action = Utilities.neo4j_receive(request)
+    return HttpResponse(action, content_type="application/json")

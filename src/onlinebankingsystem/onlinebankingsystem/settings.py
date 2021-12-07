@@ -11,16 +11,20 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import environ
 from pathlib import Path
+
+env = environ.Env(DEBUG=(bool,False))
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '_f0%%^m+n_*b0*2(a+-4iyv%c4or18w44ma+kb-53dxne@3391'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -58,7 +62,7 @@ ROOT_URLCONF = 'onlinebankingsystem.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
+        'DIRS': [os.path.join(BASE_DIR,'templates')]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -82,26 +86,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'onlinebankingsystem',
-        'USER': 'root',
-        'PASSWORD': 'gabriel.09',
-        'HOST': '127.0.0.1',
+        'USER': env('MYSQL_USER'),
+        'PASSWORD': env('MYSQL_PASSWORD'),
+        'HOST': env('MYSQL_HOST'),
         'PORT': '3306'
     },
-    'mongodb': {
-        'ENGINE':'djongo',
-        'NAME': 'onlinebankingsystem',
-        'ENFORCE_SCHEMA': False,
-        'CLIENT': {
-            'host': 'mongodb+srv://Roman:Databases2021@bankingsystem1.kubpg.mongodb.net/test'
-        }
-    }
-}
-
-NEO4J_DATABASES = {
-    'neo4j': {
-        'HOST': 'localhost',
-        'PORT': '7474'
-    }
 }
 
 
@@ -146,3 +135,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+from neomodel import config
+config.DATABASE_URL = env('NEO4J_URL')
