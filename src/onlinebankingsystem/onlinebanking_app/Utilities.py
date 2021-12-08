@@ -142,8 +142,9 @@ from pymongo import MongoClient
 from django.contrib.auth.hashers import check_password, make_password
 from django.shortcuts import render, redirect
 
+
 # connect to the mongoclient
-client = MongoClient()
+client = MongoClient("mongodb+srv://Roman:Databases2021@bankingsystem1.kubpg.mongodb.net/test")
 
 # get the database
 db = client['onlinebankingsystem']
@@ -195,6 +196,8 @@ def mongo_show_cards(client_id):
             return json.dumps(x, indent=2) 
     else:
         return "Client does not exist. Please enter a valid client ID."
+
+
 def mongo_show_loans(client_id):
     if cl.count({"_id":client_id}):
         for x in cl.aggregate([
@@ -256,8 +259,10 @@ def mongo_received(request):
                 amount = float(amount)
                 with client.start_session() as session:
                         with session.start_transaction():
-                            cl.update({ "_id": client_id, "accounts.number": account_number}, {"$inc": { "accounts.$.balance": amount}, "$set": {"accounts.$.lastUpdate": cur_date}})
-                            tr.insert({"_id":tr.count(), "account_number": account_number, "amount": amount, "status": "received", "date": cur_date, "client_id": client_id})
+                            cl.update({ "_id": client_id, "accounts.number": account_number}, 
+                            {"$inc": { "accounts.$.balance": amount}, "$set": {"accounts.$.lastUpdate": cur_date}})
+                            tr.insert({"_id":tr.count(), "account_number": account_number, "amount": amount, 
+                            "status": "received", "date": cur_date, "client_id": client_id})
                 
                 return "Transaction Successful"
             else:
@@ -298,7 +303,7 @@ def neo4j_highest_transaction(client_id):
             "date": transaction.date.strftime("%y-%m-%d")
         })
         return json.dumps(data, indent=2)
-    return HttpResponse("ERROR")
+    return HttpResponse("Client doesn't exist")
 
 def neo4j_show_cards(client_id):
     id = 0
@@ -327,7 +332,7 @@ def neo4j_show_cards(client_id):
                 "type2": "Debit Card"
             }
         return json.dumps(data, indent=2)
-    return HttpResponse("ERROR") 
+    return HttpResponse("Client doesn't exist") 
 
 def neo4j_show_loans(client_id):
     data = []
@@ -344,7 +349,7 @@ def neo4j_show_loans(client_id):
                 "dateend": loan.dateend
             })
         return json.dumps(data, indent=2)
-    return HttpResponse("ERROR")
+    return HttpResponse("Client doesn't exist")
 
 from datetime import datetime
 def neo4j_show_transactions(request, client_id):
@@ -363,7 +368,7 @@ def neo4j_show_transactions(request, client_id):
                         "date": transaction.date.strftime("%y-%m-%d")
                     })
             return json.dumps(data, indent=2)
-        return HttpResponse("ERROR")
+        return HttpResponse("Client doesn't exist")
 
 
 @db.transaction
