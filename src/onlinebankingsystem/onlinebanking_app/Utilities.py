@@ -33,7 +33,7 @@ def highest_transaction(param):
                 "status": record[3], 
                 "date": record[4]
                 }
-        return json.dumps(mydict, indent=2)
+        return json.dumps(mydict, indent=2, default=str)
     finally:
         cursor.close()
 
