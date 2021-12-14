@@ -65,7 +65,7 @@ def show_cards(param):
         for record in cursor.fetchall():
             id += 1
             mydict[id] = {"firstName": record[0], "lastName": record[1], "type": record[2], "number": record[3], "date": record[4], "type2": record[5]}
-        return json.dumps(mydict, indent=2, sort_keys=False)
+        return json.dumps(mydict, indent=2, sort_keys=False, default=str)
     finally:
         cursor.close()
       
@@ -110,13 +110,13 @@ def show_transactions(account_number, start_date, end_date):
         result = cursor.execute("SELECT * FROM accounts WHERE accountNumber='{}'".format(account_number))
         if result == 0:
             return "No client with this account number found."
-        cursor.execute("CALL ShowTransactions({},'{}','{}')".format(account_number,start_date,end_date))
+        cursor.execute("CALL ShowTransactions('{}','{}','{}')".format(account_number,start_date,end_date))
         for record in cursor.fetchall():
             if account_number in mydict:
                 mydict[account_number].append({"typeOfTransaction": record[0], "amount": float(record[1]), "status": record[2], "date": record[3]})
             else:
                 mydict[account_number] = [{"typeOfTransaction": record[0], "amount": float(record[1]), "status": record[2], "date": record[3]}]
-        return json.dumps(mydict, indent=2)
+        return json.dumps(mydict, indent=2, default=str)
     finally:
         cursor.close()
 

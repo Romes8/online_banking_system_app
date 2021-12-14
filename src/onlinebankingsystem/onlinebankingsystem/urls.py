@@ -22,8 +22,8 @@ from django.conf.urls import url
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('mysql/highestTransaction/<int:account_id>/', views.highest, name='Highest Transaction Made'),
-    path('mysql/showCards/<str:ssnclient>/', views.show_cards, name='Show Cards'),
-    path('mysql/showTransactions/<str:account_number>/<str:start_date>/<str:end_date>/', views.show_transactions, name='Show Transactions for the specific period'),
+    path('mysql/showCards/', views.show_cards, name='Show Cards'),
+    path('mysql/showTransactions/', views.show_transactions, name='Show Transactions for the specific period'),
     path('mysql/showLoans/<int:account_id>/', views.show_loans, name='Show loans and their state'),
     path('mysql/cashback/', views.cashback, name='Cashback'),
 

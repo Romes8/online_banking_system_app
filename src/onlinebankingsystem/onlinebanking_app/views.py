@@ -9,7 +9,9 @@ def index(request):
     return HttpResponse("Cashback done")
 
 
-def show_cards(request, ssnclient):
+def show_cards(request):
+    if request.method == "POST":
+        ssnclient = request.POST.get('ssnclient')
     action = Utilities.show_cards(ssnclient)
     print(action)
     print("test")
@@ -21,7 +23,11 @@ def highest(request, account_id):
     return HttpResponse(action, content_type = "application/json")
 
 
-def show_transactions(request, account_number, start_date, end_date):
+def show_transactions(request):
+    if request.method == "POST":
+        account_number = request.POST.get('account_number')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
     action = Utilities.show_transactions(account_number, start_date, end_date)
     return HttpResponse(action, content_type = "application/json")
 
