@@ -85,15 +85,13 @@ WSGI_APPLICATION = 'onlinebankingsystem.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'onlinebankingsystem',
-        'USER': env('MYSQL_USER'),
-        'PASSWORD': env('MYSQL_PASSWORD'),
-        'HOST': env('MYSQL_HOST'),
-        'PORT': '3306'
-    },
+        'NAME': 'c8ybdjqe8hkf4l2s',
+        'USER': 'abzflkiqou6lh08d',
+        'PASSWORD': 'g1wh9mi0j9y6xfov',
+        'HOST': 'c8u4r7fp8i8qaniw.chr7pe7iynqr.eu-west-1.rds.amazonaws.com',
+        'PORT': '3306',
+        },
 }
-
-
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
